@@ -2,6 +2,7 @@ from django import forms
 from .models import Consultation, Customer, Order
 from phonenumber_field.formfields import PhoneNumberField
 
+
 class ConsultationForm(forms.ModelForm):
     class Meta:
         model = Consultation
@@ -11,6 +12,7 @@ class ConsultationForm(forms.ModelForm):
             'phone_number': forms.TextInput(attrs={'placeholder': '+7 (999) 000 00 00', 'class': 'consultation__form_input order__form_input singUpConsultation__form_input', 'required': True}),
             'email': forms.EmailInput(attrs={'placeholder': 'Ваш e-mail (необязательно)', 'class': 'consultation__form_input'}),
         }
+
 
 class CustomerForm(forms.ModelForm):
     class Meta:
@@ -29,6 +31,7 @@ class CustomerForm(forms.ModelForm):
             raise forms.ValidationError("Телефон должен начинаться с '+' и содержать код страны, например, +79991123456.")
         return phone
 
+
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
@@ -44,6 +47,7 @@ class OrderForm(forms.ModelForm):
                 ('18:00-20:00', '18:00-20:00'),
             ], attrs={'class': 'order__form_input', 'required': True}),
         }
+
 
 class PaymentForm(forms.Form):
     card_num = forms.CharField(max_length=16, widget=forms.TextInput(attrs={'placeholder': 'Введите номер', 'class': 'order__form_input orderStep_form_input', 'required': True}))

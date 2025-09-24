@@ -2,6 +2,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils import timezone
 
+
 class Bouquet(models.Model):
     name = models.CharField(verbose_name='Название букета', max_length=50, unique=True)
     image = models.ImageField(verbose_name='Изображение букета', upload_to='bouquets/', blank=True)
@@ -30,6 +31,7 @@ class Bouquet(models.Model):
         verbose_name = 'Букет'
         verbose_name_plural = 'Букеты'
 
+
 class Customer(models.Model):
     first_name = models.CharField('Имя', max_length=50)
     last_name = models.CharField('Фамилия', max_length=50, blank=True)
@@ -42,6 +44,7 @@ class Customer(models.Model):
     class Meta:
         verbose_name = 'Покупатель'
         verbose_name_plural = 'Покупатели'
+
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Покупатель', on_delete=models.CASCADE)
@@ -71,6 +74,7 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
+
 
 class Consultation(models.Model):
     name = models.CharField('Имя', max_length=50)
