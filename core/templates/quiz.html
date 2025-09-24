@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %} - Викторина (Шаг 1){% endblock %}
+{% block content %}
+    {% load static %}
+    <section id="quiz">
+        <div class="container">
+            <div class="quiz">
+                <div class="quiz__back ">
+                    <a href="{% url 'index' %}" class="quiz__back_link fic"><img src="{% static 'img/arrow-left.svg' %}" alt="arrow-left" class="arrowLeft">
+                    <span class="quiz__back_intro">Назад</span></a>
+                </div>
+                <div class="quiz__block">
+                    <h1 class="quiz__title">К какому событию нужен букет?</h1>
+                    <form action="{% url 'quiz' %}" method="post" class="quiz__elems fic">
+                        {% csrf_token %}
+                        {% for value, label in occasions %}
+                        <button type="submit" name="occasion" value="{{ value }}" class="quiz__elem">{{ label }}</button>
+                        {% endfor %}
+                    </form>
+                    <div class="quiz__progress">
+                        <div class="quiz__progress_step">
+                            <span class="quiz__progress_num">1</span>
+                            <span class="quiz__progress_in"> шаг из </span>
+                            <span class="quiz__progress_num">2</span>
+                        </div>
+                        <div class="quiz__progress_line">
+                            <div class="quiz__progress_lineActive"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

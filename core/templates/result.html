@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %} - Результат{% endblock %}
+{% block content %}
+    {% load static %}
+    <section id="result">
+        <div class="container">
+            <div class="result p100">
+                <div class="title">Мы подобрали специально для Вас</div>
+                {% if bouquet %}
+                    <div class="result__block ficb">
+                        <div class="result__block_first">
+                            <img src="{% if bouquet.image %}{{ bouquet.image.url }}{% else %}{% static 'img/cardImg.jpg' %}{% endif %}" alt="{{ bouquet.name }}" class="result__img">
+                        </div>
+                        <div class="result__block_sec">
+                            <div class="result__title">{{ bouquet.name }}</div>
+                            <div class="result__price">{{ bouquet.price }} руб</div>
+                            <div class="result__elems">
+                                <span class="result__elems_intro">Состав</span>
+                                <div class="result__items">
+                                    {% if bouquet.composition %}
+                                        {% for item in bouquet.composition.splitlines %}
+                                            <span class="result_items_intro">{{ item }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="result_items_intro">Состав не указан</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <a href="{% url 'order' bouquet.id %}" class="btn largeBtn result__btn">Заказать букет</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <p>Букет не найден. Попробуйте снова.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

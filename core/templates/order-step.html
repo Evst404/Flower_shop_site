@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %} - Оплата{% endblock %}
+{% block content %}
+    {% load static %}
+    <section id="orderStep">
+        <div class="container">
+            <div class="order orderStep">
+                <div class="order__block">
+                    <div class="order_items">
+                        <div class="title">Оплата</div>
+                        <form action="{% url 'order_step' order.id %}" method="post" class="order__form orderStep_form">
+                            {% csrf_token %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="message {{ message.tags }}">{{ message }}</div>
+                                {% endfor %}
+                            {% endif %}
+                            <div class="order__form_block">
+                                <div class="order__form_items">
+                                    <div class="order__form_intro">номер карты</div>
+                                    {{ payment_form.card_num }}
+                                    <div class="order__form_item fic">
+                                        {{ payment_form.card_mm }}
+                                        {{ payment_form.card_gg }}
+                                    </div>
+                                    {{ payment_form.card_fname }}
+                                    {{ payment_form.card_cvc }}
+                                </div>
+                                <div class="order__form_items">
+                                    <div class="order__form_intro">Ваш e-mail (необязательно)</div>
+                                    {{ payment_form.email }}
+                                </div>
+                            </div>
+                            <div class="order__form_line"></div>
+                            <div class="order__form_btns ficb">
+                                <button type="submit" class="btn order__form_pay">Оплатить</button>
+                                <a href="{% url 'order' order.bouquet.id %}" class="btn order__form_btn">Назад</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <img src="{% static 'img/orderImg.jpg' %}" alt="orderImg" class="order__img">
+    </section>
+{% endblock %}

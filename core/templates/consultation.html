@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %} - Консультация{% endblock %}
+{% block content %}
+    {% load static %}
+    <section id="singUpConsultation">
+        <div class="container">
+            <div class="singUpConsultation">
+                <form action="{% url 'consultation' %}" method="post" class="singUpConsultation__form">
+                    {% csrf_token %}
+                    <div class="title">Запись на консультацию</div>        
+                    {{ form.as_p }}
+                    <div class="chekbox fic">
+                        <input type="checkbox" name="agree" class="singUpConsultation__ckekbox" checked required>
+                        <span class="chekbox__intro">Я согласен(а) с политикой конфиденциальности</span>
+                    </div>
+                    <button type="submit" class="btn singUpConsultation__form_btn">Отправить</button>    
+                </form>
+                <div class="blockImgHiden"></div>
+            </div>
+        </div>
+        <img src="{% static 'img/singUpConsultationImg.jpg' %}" alt="singUpConsultationImg" class="singUpConsultation__img">
+    </section>
+{% endblock %}

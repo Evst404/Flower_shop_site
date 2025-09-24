@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %} - {{ bouquet.name }}{% endblock %}
+{% block content %}
+    {% load static %} 
+    <section id="card">
+        <div class="container">
+            <div class="card ficb">
+                <div class="card__block card__block_first">
+                    <img src="{% if bouquet.image %}{{ bouquet.image.url }}{% else %}{% static 'img/cardImg.jpg' %}{% endif %}" alt="img" class="card__img">
+                </div>
+                <div class="card__block card__block_sec">
+                    <div class="title">{{ bouquet.name }}</div>
+                    <div class="card__block_price">{{ bouquet.price }} руб</div>
+                    <div class="card__elems ">
+                        <span class="card__elems_intro">Состав</span>
+                        <div class="card__items">
+                            {% if bouquet.composition %}
+                                {% for item in bouquet.composition.splitlines %}
+                                    <span class="card_items_intro">{{ item }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="card_items_intro">Состав не указан</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card__elems ">
+                        <span class="card__elems_intro">Размер</span>
+                        <div class="card__items">
+                            <span class="card_items_intro">Высота - 50 см</span>
+                            <span class="card_items_intro">Ширина - 30 см</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'order' bouquet.id %}" class="btn largeBtn card__btn">Заказать букет</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="consultation">
+        <div class="container">
+            <div class="consultation">
+                <div class="title consultation__title">Оставьте заявку на консультацию</div>
+                <form action="{% url 'card' bouquet.id %}" method="post" class="consultation__form">
+                    {% csrf_token %}
+                    {{ consultation_form.as_p }}
+                    <button type="submit" name="consultation_submit" class="consultation__form_btn">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

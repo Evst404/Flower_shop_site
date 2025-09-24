@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %} - Каталог{% endblock %}
+{% block content %}
+    {% load static %}
+    <section id="catalog">
+        <div class="container p100">
+            <div class="catalog">
+                <div class="title">Все букеты</div>
+                <div class="catalog__block">
+                    <div class="recommended__elems ficb recommended__elems_first">
+                        {% for bouquet in bouquets|slice:":3" %}
+                        <div class="recommended__block {% if forloop.counter == 1 %}recommended__block_first{% elif forloop.counter == 2 %}recommended__block_sec{% elif forloop.counter == 3 %}recommended__block_thr{% endif %}">
+                            <div class="recommended__block_elems ficb">
+                                <span class="recommended__block_intro"><a href="{% url 'card' bouquet.id %}">{{ bouquet.name }}</a></span>
+                                <span class="recommended__block_price">{{ bouquet.price }} руб</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if bouquets|length > 3 %}
+                    <div class="recommended__elems ficb recommended__elems_sec">
+                        {% for bouquet in bouquets|slice:"3:" %}
+                        <div class="recommended__block {% if forloop.counter == 1 %}recommended__block_first{% elif forloop.counter == 2 %}recommended__block_sec{% elif forloop.counter == 3 %}recommended__block_thr{% endif %}">
+                            <div class="recommended__block_elems ficb">
+                                <span class="recommended__block_intro"><a href="{% url 'card' bouquet.id %}">{{ bouquet.name }}</a></span>
+                                <span class="recommended__block_price">{{ bouquet.price }} руб</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <a href="#" class="btn largeBtn catalog__btn">Показать ещё</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="consultation">
+        <div class="container">
+            <div class="consultation">
+                <div class="title consultation__title">Оставьте заявку на консультацию</div>
+                <form action="{% url 'consultation' %}" method="post" class="consultation__form">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" name="consultation_submit" class="consultation__form_btn">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,416 @@
+/* Общие стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+a,
+button {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+input::placeholder {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+.container {
+    max-width: 1215px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 103.52%;
+    color: #17CF97;
+    margin-bottom: 30px;
+}
+
+.btn {
+    background: #17CF97;
+    border-radius: 40px;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 103.52%;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #14A87B;
+}
+
+.largeBtn {
+    width: 100%;
+    height: 57px;
+    background: #D9FAF1;
+    color: #17CF97;
+    margin-top: 30px;
+    border-radius: 40px;
+}
+
+.largeBtn:hover {
+    background: #17CF97;
+    color: #FFFFFF;
+}
+
+.fic {
+    display: flex;
+    align-items: center;
+}
+
+.ficb {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ficc {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.p100 {
+    padding: 100px 0;
+}
+
+/* Шапка и меню */
+#header {
+    padding-top: 11px;
+}
+
+.header {
+    border-bottom: 1px solid #17CF97;
+}
+
+.header .logo {
+    padding-bottom: 11px;
+}
+
+.menu__item {
+    margin-right: 40px;
+    list-style: none;
+}
+
+.menu__item:last-child {
+    margin-right: 0;
+}
+
+.menu__item_link {
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 145.02%;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #17CF97;
+}
+
+/* Секция заказа */
+#order {
+    position: relative;
+    padding: 50px 0;
+}
+
+.order {
+    position: relative;
+    overflow: hidden;
+}
+
+.order__block {
+    height: 775px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.order_items {
+    width: 740px;
+    margin-top: 200px;
+    margin-right: 56px;
+}
+
+.order__form_block {
+    margin-bottom: 30px;
+}
+
+.order__form_input {
+    width: 240px;
+    height: 57px;
+    background: #F4F4F4;
+    border-radius: 5px;
+    padding-left: 30px;
+    padding-right: 15px;
+    border: none;
+    font-size: 16px;
+    line-height: 103.52%;
+    color: rgba(0, 0, 0, 0.3);
+    outline: none;
+    margin-right: 10px;
+}
+
+.order__form_input:last-child {
+    margin-right: 0;
+}
+
+.order__form_btns {
+    flex-wrap: wrap;
+}
+
+.order__form_radioBlock {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    min-height: 37px;
+}
+
+.radioLable {
+    padding: 10px 30px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 103.52%;
+    color: #17CF97;
+    border: 1px solid #17CF97;
+    border-radius: 100px;
+}
+
+input[type="radio"]:checked + .radioLable {
+    background: #17CF97;
+    color: #fff;
+}
+
+.order__form_radio {
+    display: none;
+}
+
+.order__form_line {
+    background: #2D2D2D;
+    height: 2px;
+    border: none;
+    margin-top: 30px;
+    margin-bottom: 50px;
+    opacity: 0.1;
+}
+
+.order__form_pay {
+    width: 365px;
+    height: 57px;
+    background: #17CF97;
+    color: #FFFFFF;
+}
+
+.order__form_btn {
+    width: 365px;
+    height: 57px;
+    background: #D9FAF1;
+    color: #17CF97;
+}
+
+.order__form_btn:hover {
+    color: #fff;
+    background: #17CF97;
+}
+
+.order__img {
+    position: absolute;
+    width: 511px;
+    right: 0;
+    top: 0;
+    height: 775px;
+}
+
+/* Адаптивность */
+@media (max-width: 1280px) {
+    .order__block {
+        height: auto;
+    }
+    .order_items {
+        margin-top: 50px;
+        margin-right: 0;
+        width: 100%;
+    }
+    .order__img {
+        position: relative;
+        width: 100%;
+        max-height: 400px;
+        margin-top: 20px;
+    }
+    .order__form_input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .order__form_pay,
+    .order__form_btn {
+        width: 100%;
+    }
+}
+
+/* Секция оплаты */
+#orderStep {
+    position: relative;
+    padding: 50px 0;
+}
+
+.orderStep .order__form_line {
+    margin: 20px 0 36px;
+}
+
+.order__form_intro {
+    font-size: 14px;
+    line-height: 145.02%;
+    color: #323232;
+    margin-bottom: 5px;
+}
+
+.orderStep_form .order__form_block {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.orderStep_form_input {
+    height: 50px;
+    width: 100%;
+    max-width: 291px;
+    margin-bottom: 10px;
+    background: #F4F4F4;
+    border-radius: 5px;
+    padding: 0 15px;
+    border: none;
+    font-size: 16px;
+    line-height: 103.52%;
+    color: rgba(0, 0, 0, 0.3);
+    outline: none;
+}
+
+.order__form_item .orderStep_form_input {
+    width: 100%;
+    max-width: 88px;
+    margin-right: 10px;
+}
+
+.orderStep_form input[name="cardFname"] {
+    width: 100%;
+    max-width: 220px;
+    margin-right: 15px;
+}
+
+.orderStep_form input[name="cardCvc"] {
+    width: 100%;
+    max-width: 91px;
+}
+
+/* Дополнительные стили для сообщений */
+.message {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+#consultation {
+    padding-top: 37px;
+    padding-bottom: 49px;
+    background: #17CF97;
+}
+
+.consultation__title {
+    line-height: 103.52%;
+    margin-bottom: 19px;
+    text-align: center;
+    color: #FFFFFF;
+}
+
+.consultation__form {
+    width: 655px;
+    margin: 0 auto;
+}
+
+.consultation__form_input {
+    padding-left: 30px;
+    padding-right: 7px;
+    width: 240px;
+    height: 57px;
+    border: none;
+    outline: none;
+    background: #FFFFFF;
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: 103.52%;
+    color: rgba(0, 0, 0, 0.3);
+    margin-right: 10px;
+}
+
+.consultation__form_btn {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 103.52%;
+    color: #FFFFFF;
+    width: 141px;
+    height: 57px;
+    background: transparent;
+    border: 1px solid #FFFFFF;
+    border-radius: 40px;
+    cursor: pointer;
+}
+
+#footer {
+    background: #F5F5F5;
+}
+
+.footer {
+    padding-top: 46px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.footer__logo {
+    margin-bottom: 40px;
+}
+
+.line {
+    margin: 15px 0;
+    height: 2px;
+    border: none;
+    background: #17CF97;
+}
+
+.footer__poli {
+    font-size: 12px;
+    line-height: 145.02%;
+    text-decoration-line: underline;
+    color: #000000;
+    opacity: 0.3;
+}
+
+.footer_cop {
+    font-size: 12px;
+    line-height: 145.02%;
+    margin-top: 10px;
+    color: #000000;
+    opacity: 0.3;
+}
