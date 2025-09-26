@@ -1,0 +1,54 @@
+[
+    {
+        "model": "core.Bouquet",
+        "pk": 1,
+        "fields": {
+            "name": "Букет с розами",
+            "price": 1200,
+            "description": "Элегантный букет с розами для особого случая.",
+            "composition": "10 роз, зелень",
+            "occasion": "Свадьба",
+            "budget": "1000-5000",
+            "image": "bouquets/catalogBg1.jpg"
+        }
+    },
+    {
+        "model": "core.Bouquet",
+        "pk": 2,
+        "fields": {
+            "name": "Праздничный букет",
+            "price": 1800,
+            "description": "Яркий букет для празднования.",
+            "composition": "15 тюльпанов, лента",
+            "occasion": "День рождения",
+            "budget": "1000-5000",
+            "image": "bouquets/catalogBg2.jpg"
+        }
+    },
+    {
+        "model": "core.Bouquet",
+        "pk": 3,
+        "fields": {
+            "name": "Нейтральный букет",
+            "price": 700,
+            "description": "Универсальный букет для повседневного использования.",
+            "composition": "8 хризантем",
+            "occasion": "Без повода",
+            "budget": "до 1000",
+            "image": "bouquets/catalogBg3.jpg"
+        }
+    },
+    {
+        "model": "core.Bouquet",
+        "pk": 4,
+        "fields": {
+            "name": "Специальный букет",
+            "price": 3000,
+            "description": "Уникальный букет для особых событий.",
+            "composition": "12 лилий, розы, декор",
+            "occasion": "Другой повод",
+            "budget": "от 5000",
+            "image": "bouquets/catalogBg4.jpg"
+        }
+    }
+]

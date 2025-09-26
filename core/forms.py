@@ -1,26 +1,29 @@
 from django import forms
 from .models import Customer, Order
+from phonenumber_field.formfields import PhoneNumberField
+
 
 class ConsultationForm(forms.Form):
-    name = forms.CharField(max_length=100, label='Имя')
-    phone = forms.CharField(max_length=15, label='Телефон')
+    name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Введите Имя', 'class': 'consultation__form_input'}))
+    phone = PhoneNumberField(widget=forms.TextInput(attrs={'placeholder': '+7 (999) 000 00 00', 'class': 'consultation__form_input'}))
+
 
 class CustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ['first_name', 'last_name', 'phone_number']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'placeholder': 'Введите Имя', 'class': 'order__form_input'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Фамилия', 'class': 'order__form_input'}),
+            'phone_number': forms.TextInput(attrs={'placeholder': '+7 (999) 000 00 00', 'class': 'order__form_input'}),
+        }
+
 
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ['delivery_address', 'delivery_time']
         widgets = {
-            'delivery_time': forms.Select(choices=[
-                ('Как можно скорее', 'Как можно скорее'),
-                ('10:00-12:00', '10:00-12:00'),
-                ('12:00-14:00', '12:00-14:00'),
-                ('14:00-16:00', '14:00-16:00'),
-                ('16:00-18:00', '16:00-18:00'),
-                ('18:00-20:00', '18:00-20:00'),
-            ]),
+            'delivery_address': forms.TextInput(attrs={'placeholder': 'Адрес доставки', 'class': 'order__form_input'}),
+            'delivery_time': forms.TextInput(attrs={'class': 'order__form_input'}),
         }

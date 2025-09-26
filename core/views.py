@@ -3,14 +3,13 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Count
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
 
 from yookassa import Configuration, Payment as YooPayment
 
-from .models import Bouquet, Consultation, Customer, Order, Courier, Payment
+from .models import Bouquet, Consultation, Customer, Order, Courier, Florist, Payment
 from .forms import ConsultationForm, CustomerForm, OrderForm
 
 import random
@@ -59,10 +58,12 @@ def handle_consultation_submission(request, redirect_name, *args, **kwargs):
             first_name=form.cleaned_data['name'],
             phone_number=form.cleaned_data['phone']
         )
-        Consultation.objects.create(customer=customer)
+        florists = Florist.objects.annotate(consultation_count=Count('consultation')).order_by('consultation_count')
+        assigned_florist = florists.first() if florists.exists() else None
+        consultation = Consultation.objects.create(customer=customer, florist=assigned_florist)  
 
-        occasion = request.session.get('occasion', 'Без выбора')
-        budget = request.session.get('budget', 'Без выбора')
+        occasion = request.session.get('occasion', 'Без повода')
+        budget = request.session.get('budget', '1000-5000')
 
         message = (
             f"<b>Новая заявка на консультацию:</b>\n"
@@ -73,7 +74,11 @@ def handle_consultation_submission(request, redirect_name, *args, **kwargs):
             f"Бюджет: {budget}"
         )
 
-        send_telegram_message(settings.TELEGRAM_FLORIST_CHAT_ID, message)
+        florist_chat_id = assigned_florist.telegram_chat_id if assigned_florist and assigned_florist.telegram_chat_id else None
+        if florist_chat_id:
+            send_telegram_message(florist_chat_id, message)
+        elif settings.TELEGRAM_BOT_TOKEN and settings.TELEGRAM_FLORIST_CHAT_ID:  
+            send_telegram_message(settings.TELEGRAM_FLORIST_CHAT_ID, message)
 
         request.session.pop('occasion', None)
         request.session.pop('budget', None)
@@ -91,8 +96,7 @@ def index(request):
     return render(
         request,
         'index.html',
-        {'recommended_bouquets': recommended_bouquets,
-         'consultation_form': form}
+        {'recommended_bouquets': recommended_bouquets, 'consultation_form': form}
     )
 
 
@@ -137,9 +141,7 @@ def quiz_step(request):
             return render(
                 request,
                 'quiz-step.html',
-                {'error': 'Нет подходящих букетов.',
-                 'budgets': budgets,
-                 'consultation_form': form}
+                {'error': 'Нет подходящих букетов.', 'budgets': budgets, 'consultation_form': form}
             )
     return render(
         request,
@@ -150,9 +152,7 @@ def quiz_step(request):
 
 def result(request, bouquet_id):
     bouquet = get_object_or_404(Bouquet, id=bouquet_id)
-    form = handle_consultation_submission(
-        request, 'result', bouquet_id=bouquet_id
-    )
+    form = handle_consultation_submission(request, 'result', bouquet_id=bouquet_id)
     if isinstance(form, HttpResponseRedirect):
         return form
     return render(
@@ -179,9 +179,7 @@ def catalog(request):
 
 def card(request, bouquet_id):
     bouquet = get_object_or_404(Bouquet, id=bouquet_id)
-    form = handle_consultation_submission(
-        request, 'card', bouquet_id=bouquet_id
-    )
+    form = handle_consultation_submission(request, 'card', bouquet_id=bouquet_id)
     if isinstance(form, HttpResponseRedirect):
         return form
     return render(
@@ -212,9 +210,7 @@ def order(request, bouquet_id):
             order = order_form.save(commit=False)
             order.bouquet = bouquet
             order.customer = customer
-            couriers = Courier.objects.annotate(
-                order_count=Count('order')
-            ).order_by('order_count')
+            couriers = Courier.objects.annotate(order_count=Count('order')).order_by('order_count')
             if couriers.exists():
                 order.courier = couriers.first()
             order.save()
@@ -224,20 +220,13 @@ def order(request, bouquet_id):
                 idempotence_key = str(uuid.uuid4())
                 payment = YooPayment.create(
                     {
-                        "amount": {
-                            "value": str(order.bouquet.price),
-                            "currency": "RUB"
-                        },
+                        "amount": {"value": str(order.bouquet.price), "currency": "RUB"},
                         "confirmation": {
                             "type": "redirect",
-                            "return_url": request.build_absolute_uri(
-                                reverse('order_complete', args=[order.id])
-                            )
+                            "return_url": request.build_absolute_uri(reverse('order_complete', args=[order.id]))
                         },
                         "capture": True,
-                        "description": (
-                            f"Заказ {order.id}: {order.bouquet.name}"
-                        ),
+                        "description": f"Заказ {order.id}: {order.bouquet.name}",
                         "metadata": {"order_id": order.id}
                     },
                     idempotence_key
@@ -254,9 +243,7 @@ def order(request, bouquet_id):
                 return render(
                     request,
                     'order.html',
-                    {'bouquet': bouquet,
-                     'customer_form': customer_form,
-                     'order_form': order_form}
+                    {'bouquet': bouquet, 'customer_form': customer_form, 'order_form': order_form}
                 )
         else:
             messages.error(request, 'Проверьте данные.')
@@ -266,9 +253,7 @@ def order(request, bouquet_id):
     return render(
         request,
         'order.html',
-        {'bouquet': bouquet,
-         'customer_form': customer_form,
-         'order_form': order_form}
+        {'bouquet': bouquet, 'customer_form': customer_form, 'order_form': order_form}
     )
 
 
@@ -304,8 +289,7 @@ def webhook_yookassa(request):
                         f"Букет: {order.bouquet.name}\n"
                         f"Адрес: {order.delivery_address}\n"
                         f"Время: {order.delivery_time}\n"
-                        f"Клиент: {order.customer.first_name} "
-                        f"{order.customer.last_name or ''}\n"
+                        f"Клиент: {order.customer.first_name} {order.customer.last_name or ''}\n"
                         f"Телефон: {order.customer.phone_number}\n"
                         f"Сумма: {payment_obj.amount} руб"
                     )
@@ -314,62 +298,3 @@ def webhook_yookassa(request):
             pass
         return HttpResponse(status=200)
     return HttpResponse(status=400)
-
-
-@csrf_exempt
-def test_webhook(request):
-    if request.method == 'POST':
-        try:
-            payment_id = request.POST.get('payment_id')
-            payment_obj = Payment.objects.get(payment_id=payment_id)
-            payment_obj.status = 'succeeded'
-            payment_obj.save()
-            order = payment_obj.order
-            courier_chat_id = (
-                order.courier.telegram_chat_id
-                if order.courier and order.courier.telegram_chat_id
-                else settings.TELEGRAM_COURIER_CHAT_ID
-            )
-            if courier_chat_id:
-                message = (
-                    f"<b>Заказ оплачен (тест):</b>\n"
-                    f"Букет: {order.bouquet.name}\n"
-                    f"Адрес: {order.delivery_address}\n"
-                    f"Время: {order.delivery_time}\n"
-                    f"Клиент: {order.customer.first_name} "
-                    f"{order.customer.last_name or ''}\n"
-                    f"Телефон: {order.customer.phone_number}\n"
-                    f"Сумма: {payment_obj.amount} руб"
-                )
-                send_courier_telegram_message(courier_chat_id, message)
-                return HttpResponse(
-                    f"Тестовое уведомление отправлено: {message}", status=200
-                )
-            return HttpResponse("Нет chat_id для курьера", status=400)
-        except Exception as e:
-            return HttpResponse(f"Ошибка: {e}", status=400)
-    return HttpResponse("Отправьте POST с payment_id", status=400)
-
-
-@staff_member_required
-def stats(request):
-    orders_by_bouquet = (
-        Order.objects.values('bouquet__name')
-        .annotate(count=Count('id'))
-        .order_by('-count')
-    )
-    orders_by_date = (
-        Order.objects.extra(select={'date': 'date(created_at)'})
-        .values('date')
-        .annotate(count=Count('id'))
-    )
-    orders_by_customer = (
-        Order.objects.values('customer__first_name', 'customer__last_name')
-        .annotate(count=Count('id'))
-    )
-    context = {
-        'orders_by_bouquet': orders_by_bouquet,
-        'orders_by_date': orders_by_date,
-        'orders_by_customer': orders_by_customer,
-    }
-    return render(request, 'stats.html', context)

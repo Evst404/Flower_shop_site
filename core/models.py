@@ -22,8 +22,6 @@ class Bouquet(models.Model):
     composition = models.TextField(verbose_name='Состав', blank=True)
     occasion = models.CharField(verbose_name='Повод', max_length=50, choices=OCCASIONS, default='Без повода')
     budget = models.CharField(verbose_name='Бюджет', max_length=50, choices=BUDGETS, default='1000-5000')
-    height = models.PositiveIntegerField(default=50, verbose_name='Высота (см)')
-    width = models.PositiveIntegerField(default=30, verbose_name='Ширина (см)')
 
     def __str__(self):
         return self.name
@@ -34,9 +32,9 @@ class Bouquet(models.Model):
 
 
 class Customer(models.Model):
-    first_name = models.CharField('Имя', max_length=50)
-    last_name = models.CharField('Фамилия', max_length=50, blank=True)
-    phone_number = PhoneNumberField('Номер телефона')
+    first_name = models.CharField(verbose_name='Имя', max_length=50)
+    last_name = models.CharField(verbose_name='Фамилия', max_length=50, blank=True)
+    phone_number = PhoneNumberField(verbose_name='Номер телефона')
 
     def __str__(self):
         return f'{self.first_name} {self.last_name or ""}'.strip()
@@ -46,10 +44,23 @@ class Customer(models.Model):
         verbose_name_plural = 'Покупатели'
 
 
+class Florist(models.Model):
+    name = models.CharField(verbose_name='Имя флориста', max_length=100)
+    phone_number = PhoneNumberField(verbose_name='Номер телефона', blank=True)
+    telegram_chat_id = models.CharField(verbose_name='Telegram Chat ID', max_length=50, blank=True, help_text='Для уведомлений о заявках')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Флорист'
+        verbose_name_plural = 'Флористы'
+
+
 class Courier(models.Model):
-    name = models.CharField('Имя курьера', max_length=100)
-    phone_number = PhoneNumberField('Номер телефона', blank=True)
-    telegram_chat_id = models.CharField('Telegram Chat ID', max_length=50, blank=True, help_text='Для уведомлений о заказах')
+    name = models.CharField(verbose_name='Имя курьера', max_length=100)
+    phone_number = PhoneNumberField(verbose_name='Номер телефона', blank=True)
+    telegram_chat_id = models.CharField(verbose_name='Telegram Chat ID', max_length=50, blank=True, help_text='Для уведомлений о заказах')
 
     def __str__(self):
         return self.name
@@ -59,14 +70,13 @@ class Courier(models.Model):
         verbose_name_plural = 'Курьеры'
 
 
-
 class Order(models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Покупатель', on_delete=models.CASCADE)
     bouquet = models.ForeignKey(Bouquet, verbose_name='Букет', related_name='orders', on_delete=models.CASCADE)
     courier = models.ForeignKey(Courier, verbose_name='Курьер', on_delete=models.SET_NULL, null=True, blank=True)
     delivery_address = models.CharField(verbose_name='Адрес доставки', max_length=256)
     delivery_time = models.CharField(verbose_name='Время доставки', max_length=30)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True)
 
     def __str__(self):
         return f'{self.bouquet} для {self.customer}'
@@ -76,10 +86,10 @@ class Order(models.Model):
         verbose_name_plural = 'Заказы'
 
 
-
 class Consultation(models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Покупатель', on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    florist = models.ForeignKey(Florist, verbose_name='Флорист', on_delete=models.SET_NULL, null=True, blank=True, help_text='Флорист, которому назначена заявка')
+    created_at = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True)
 
     def __str__(self):
         return f'Заявка от {self.customer or "Неизвестно"}'
@@ -89,13 +99,12 @@ class Consultation(models.Model):
         verbose_name_plural = 'Заявки на консультацию'
 
 
-
 class Payment(models.Model):
-    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='payment')
-    payment_id = models.CharField(max_length=36, unique=True)  
-    status = models.CharField(max_length=50, default='pending')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
+    order = models.OneToOneField(Order, verbose_name='Заказ', on_delete=models.CASCADE)
+    payment_id = models.CharField(verbose_name='ID платежа', max_length=36, unique=True)
+    status = models.CharField(verbose_name='Статус', max_length=50, default='pending')
+    amount = models.DecimalField(verbose_name='Сумма', max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True)
 
     def __str__(self):
         return f'Платёж для заказа {self.order.id} ({self.status})'

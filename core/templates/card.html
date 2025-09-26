@@ -43,13 +43,6 @@
                             {% endif %}
                         </div>
                     </div>
-                    <div class="card__elems">
-                        <span class="card__elems_intro">Размер</span>
-                        <div class="card__items">
-                            <span class="card_items_intro">Высота - {{ bouquet.height }} см</span>
-                            <span class="card_items_intro">Ширина - {{ bouquet.width }} см</span>
-                        </div>
-                    </div>
                     <a href="{% url 'order' bouquet.id %}" class="btn largeBtn card__btn">Заказать букет</a>
                 </div>
             </div>

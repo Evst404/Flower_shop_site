@@ -1,17 +1,16 @@
 from django.urls import path
-from .views import index, quiz, quiz_step, result, catalog, card, consultation, order, stats, order_complete, webhook_yookassa  
+from . import views
 
 
 urlpatterns = [
-    path('', index, name='index'),
-    path('quiz/', quiz, name='quiz'),
-    path('quiz/step/', quiz_step, name='quiz_step'),
-    path('result/<int:bouquet_id>/', result, name='result'),
-    path('catalog/', catalog, name='catalog'),
-    path('card/<int:bouquet_id>/', card, name='card'),
-    path('consultation/', consultation, name='consultation'),
-    path('order/<int:bouquet_id>/', order, name='order'),
-    path('stats/', stats, name='stats'),  
-    path('order_complete/<int:order_id>/', order_complete, name='order_complete'),  
-    path('webhook/yookassa/', webhook_yookassa, name='webhook_yookassa'),  
+    path('', views.index, name='index'),
+    path('quiz/', views.quiz, name='quiz'),
+    path('quiz/step/', views.quiz_step, name='quiz_step'),
+    path('result/<int:bouquet_id>/', views.result, name='result'),
+    path('catalog/', views.catalog, name='catalog'),
+    path('card/<int:bouquet_id>/', views.card, name='card'),
+    path('consultation/', views.consultation, name='consultation'),
+    path('order/<int:bouquet_id>/', views.order, name='order'),
+    path('order_complete/<int:order_id>/', views.order_complete, name='order_complete'),
+    path('webhook/yookassa/', views.webhook_yookassa, name='webhook_yookassa'),
 ]
