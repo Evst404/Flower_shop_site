@@ -13,4 +13,6 @@ urlpatterns = [
     path('order/<int:bouquet_id>/', views.order, name='order'),
     path('order_complete/<int:order_id>/', views.order_complete, name='order_complete'),
     path('webhook/yookassa/', views.webhook_yookassa, name='webhook_yookassa'),
+    path('stats/', views.stats, name='stats'),
+    path('stats/download/', views.stats_download, name='stats_download'),
 ]

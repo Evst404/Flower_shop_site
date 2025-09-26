@@ -6,9 +6,9 @@ from django.conf import settings
 from django.db.models import Count
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.admin.views.decorators import staff_member_required
 
 from yookassa import Configuration, Payment as YooPayment
-
 from .models import Bouquet, Consultation, Customer, Order, Courier, Florist, Payment
 from .forms import ConsultationForm, CustomerForm, OrderForm
 
@@ -16,7 +16,11 @@ import random
 import requests
 import uuid
 import json
-
+from requests.exceptions import RequestException
+from json.decoder import JSONDecodeError
+import csv
+from io import StringIO
+import codecs
 
 def send_telegram_message(chat_id, message):
     url = (
@@ -30,9 +34,8 @@ def send_telegram_message(chat_id, message):
     try:
         response = requests.post(url, json=payload)
         response.raise_for_status()
-    except Exception:
+    except RequestException:
         pass
-
 
 def send_courier_telegram_message(chat_id, message):
     url = (
@@ -47,9 +50,8 @@ def send_courier_telegram_message(chat_id, message):
     try:
         response = requests.post(url, json=payload)
         response.raise_for_status()
-    except Exception:
+    except RequestException:
         pass
-
 
 def handle_consultation_submission(request, redirect_name, *args, **kwargs):
     form = ConsultationForm(request.POST if request.method == 'POST' else None)
@@ -294,7 +296,52 @@ def webhook_yookassa(request):
                         f"Сумма: {payment_obj.amount} руб"
                     )
                     send_courier_telegram_message(courier_chat_id, message)
-        except Exception:
-            pass
+        except JSONDecodeError:
+            return HttpResponse(status=400)
+        except RequestException:
+            return HttpResponse(status=400)
         return HttpResponse(status=200)
     return HttpResponse(status=400)
+
+
+@staff_member_required
+def stats(request):
+    orders_by_bouquet = (
+        Order.objects.values('bouquet__name')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+    orders_by_date = (
+        Order.objects.extra(select={'date': 'date(created_at)'})
+        .values('date')
+        .annotate(count=Count('id'))
+    )
+    orders_by_customer = (
+        Order.objects.values('customer__first_name', 'customer__last_name')
+        .annotate(count=Count('id'))
+    )
+    context = {
+        'orders_by_bouquet': orders_by_bouquet,
+        'orders_by_date': orders_by_date,
+        'orders_by_customer': orders_by_customer,
+    }
+    return render(request, 'stats.html', context)
+
+
+@staff_member_required
+def stats_download(request):
+    output = StringIO()
+    output.write(codecs.BOM_UTF8.decode('utf-8'))
+    writer = csv.writer(output)
+    
+    writer.writerow(['Тип статистики', 'Категория', 'Количество'])
+    for item in Order.objects.values('bouquet__name').annotate(count=Count('id')).order_by('-count'):
+        writer.writerow(['Букет', item['bouquet__name'], item['count']])
+    for item in Order.objects.extra(select={'date': 'date(created_at)'}).values('date').annotate(count=Count('id')):
+        writer.writerow(['Дата', item['date'], item['count']])
+    for item in Order.objects.values('customer__first_name', 'customer__last_name').annotate(count=Count('id')):
+        writer.writerow(['Клиент', f"{item['customer__first_name']} {item['customer__last_name'] or ''}", item['count']])
+    
+    response = HttpResponse(output.getvalue(), content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="stats.csv"'
+    return response

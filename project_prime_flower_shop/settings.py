@@ -1,5 +1,9 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv  
+
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -72,10 +76,9 @@ CSRF_TRUSTED_ORIGINS = [
     'https://hypermotile-nonconspiring-annetta.ngrok-free.dev',
 ]
 
-TELEGRAM_BOT_TOKEN = '8149246999:AAEn9uBXyp0OC2jrz4ORaDqVTypvM_LRuNs'  
-TELEGRAM_FLORIST_CHAT_ID = '5622730212'
-TELEGRAM_COURIER_BOT_TOKEN = '8460061227:AAEK50FISkt7Xczt60g9_ve7e6B-F_s1f98'  
-TELEGRAM_COURIER_CHAT_ID = '5622730212'
-
-YOOKASSA_SHOP_ID = '1173538'
-YOOKASSA_SECRET_KEY = 'test_otiJ9TrhIiGDP3M4QWFpAnXCbqRqhs4mfDoAmP1wReY'
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+TELEGRAM_FLORIST_CHAT_ID = os.getenv('TELEGRAM_FLORIST_CHAT_ID')
+TELEGRAM_COURIER_BOT_TOKEN = os.getenv('TELEGRAM_COURIER_BOT_TOKEN')
+TELEGRAM_COURIER_CHAT_ID = os.getenv('TELEGRAM_COURIER_CHAT_ID')
+YOOKASSA_SHOP_ID = os.getenv('YOOKASSA_SHOP_ID')
+YOOKASSA_SECRET_KEY = os.getenv('YOOKASSA_SECRET_KEY')

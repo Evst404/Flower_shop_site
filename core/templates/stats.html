@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %} - Статистика{% endblock %}
+{% block content %}
+    <h1>Статистика заказов</h1>
+
+    <h2>Статистика по букетам</h2>
+    <table class="stats-table">
+        <thead>
+            <tr>
+                <th>Букет</th>
+                <th>Количество заказов</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in orders_by_bouquet %}
+                <tr>
+                    <td>{{ item.bouquet__name }}</td>
+                    <td>{{ item.count }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">Нет данных</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Статистика по датам</h2>
+    <table class="stats-table">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Количество заказов</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in orders_by_date %}
+                <tr>
+                    <td>{{ item.date }}</td>
+                    <td>{{ item.count }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">Нет данных</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Статистика по клиентам</h2>
+    <table class="stats-table">
+        <thead>
+            <tr>
+                <th>Клиент</th>
+                <th>Количество заказов</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in orders_by_customer %}
+                <tr>
+                    <td>{{ item.customer__first_name }} {{ item.customer__last_name|default:'' }}</td>
+                    <td>{{ item.count }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">Нет данных</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'stats_download' %}" class="btn">Скачать статистику (CSV)</a>
+{% endblock %}
