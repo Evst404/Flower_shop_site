@@ -1,46 +1,87 @@
 {% extends 'base.html' %}
-{% block title %} - Оплата{% endblock %}
+{% block title %} - Викторина (Шаг 2){% endblock %}
 {% block content %}
     {% load static %}
-    <section id="orderStep">
+    <header id="header">
         <div class="container">
-            <div class="order orderStep">
-                <div class="order__block">
-                    <div class="order_items">
-                        <div class="title">Оплата</div>
-                        <form action="{% url 'order_step' order.id %}" method="post" class="order__form orderStep_form">
-                            {% csrf_token %}
-                            {% if messages %}
-                                {% for message in messages %}
-                                    <div class="message {{ message.tags }}">{{ message }}</div>
-                                {% endfor %}
-                            {% endif %}
-                            <div class="order__form_block">
-                                <div class="order__form_items">
-                                    <div class="order__form_intro">номер карты</div>
-                                    {{ payment_form.card_num }}
-                                    <div class="order__form_item fic">
-                                        {{ payment_form.card_mm }}
-                                        {{ payment_form.card_gg }}
-                                    </div>
-                                    {{ payment_form.card_fname }}
-                                    {{ payment_form.card_cvc }}
-                                </div>
-                                <div class="order__form_items">
-                                    <div class="order__form_intro">Ваш e-mail (необязательно)</div>
-                                    {{ payment_form.email }}
-                                </div>
-                            </div>
-                            <div class="order__form_line"></div>
-                            <div class="order__form_btns ficb">
-                                <button type="submit" class="btn order__form_pay">Оплатить</button>
-                                <a href="{% url 'order' order.bouquet.id %}" class="btn order__form_btn">Назад</a>
-                            </div>
-                        </form>
+            <div class="header ficb">
+                <a href="{% url 'index' %}"><img src="{% static 'img/logo.svg' %}" alt="logo" class="logo"></a>
+                <nav>
+                    <ul class="menu ficc">
+                        <li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
+                        <li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+                        <li class="menu__item"><a href="{% url 'index' %}#contacts" class="menu__item_link">Контакты</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <section id="quiz">
+        <div class="container">
+            <div class="quiz">
+                <div class="quiz__back">
+                    <a href="{% url 'quiz' %}" class="quiz__back_link fic"><img src="{% static 'img/arrow-left.svg' %}" alt="arrow-left" class="arrowLeft">
+                    <span class="quiz__back_intro">Назад</span></a>
+                </div>
+                <div class="quiz__block">
+                    <h1 class="quiz__title">На какой бюджет рассчитываете?</h1>
+                    {% if error %}
+                        <p style="color: red;">{{ error }}</p>
+                    {% endif %}
+                    <form action="{% url 'quiz_step' %}" method="post" class="quiz__elems fic">
+                        {% csrf_token %}
+                        {% for value, label in budgets %}
+                        <button type="submit" name="budget" value="{{ value }}" class="quiz__elem">{{ label }}</button>
+                        {% endfor %}
+                    </form>
+                    <div class="quiz__progress">
+                        <div class="quiz__progress_step">
+                            <span class="quiz__progress_num">2</span>
+                            <span class="quiz__progress_in"> шаг из </span>
+                            <span class="quiz__progress_num">2</span>
+                        </div>
+                        <div class="quiz__progress_line">
+                            <div class="quiz__progress_lineActive" style="width: 100%;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <img src="{% static 'img/orderImg.jpg' %}" alt="orderImg" class="order__img">
     </section>
+    <section id="consultation">
+        <div class="container">
+            <div class="consultation">
+                <div class="title consultation__title">Оставьте заявку на консультацию</div>
+                <form action="{% url 'quiz_step' %}" method="post" class="consultation__form">
+                    {% csrf_token %}
+                    {% if consultation_form.name.errors %}
+                        <span style="color: red;">{{ consultation_form.name.errors.0 }}</span>
+                    {% endif %}
+                    <input type="text" name="name" class="consultation__form_input" placeholder="Введите Имя" value="{{ consultation_form.name.value|default:'' }}" required>
+                    {% if consultation_form.phone.errors %}
+                        <span style="color: red;">{{ consultation_form.phone.errors.0 }}</span>
+                    {% endif %}
+                    <input type="text" name="phone" class="consultation__form_input" placeholder="+7 (999) 000 00 00" value="{{ consultation_form.phone.value|default:'' }}" required>
+                    <button type="submit" class="consultation__form_btn">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    <footer id="footer">
+        <div class="container">
+            <div class="footer">
+                <a href="{% url 'index' %}"><img src="{% static 'img/logo.svg' %}" alt="logo" class="logo footer__logo"></a>
+                <nav>
+                    <ul class="menu footer__menu ficc">
+                        <li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
+                        <li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+                        <li class="menu__item"><a href="{% url 'index' %}#contacts" class="menu__item_link">Контакты</a></li>
+                    </ul>
+                </nav>
+                <hr class="line"></hr>
+                <a href="#" class="footer__poli">Политика конфиденциальности</a>
+                <p class="footer_cop">©️2025. FlowerShop. Все права защищены</p>
+            </div>
+        </div>
+    </footer>
 {% endblock %}

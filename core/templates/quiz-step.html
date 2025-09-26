@@ -2,10 +2,24 @@
 {% block title %} - Викторина (Шаг 2){% endblock %}
 {% block content %}
     {% load static %}
+    <header id="header">
+        <div class="container">
+            <div class="header ficb">
+                <a href="{% url 'index' %}"><img src="{% static 'img/logo.svg' %}" alt="logo" class="logo"></a>
+                <nav>
+                    <ul class="menu ficc">
+                        <li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
+                        <li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+                        <li class="menu__item"><a href="{% url 'index' %}#contacts" class="menu__item_link">Контакты</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
     <section id="quiz">
         <div class="container">
             <div class="quiz">
-                <div class="quiz__back ">
+                <div class="quiz__back">
                     <a href="{% url 'quiz' %}" class="quiz__back_link fic"><img src="{% static 'img/arrow-left.svg' %}" alt="arrow-left" class="arrowLeft">
                     <span class="quiz__back_intro">Назад</span></a>
                 </div>
@@ -16,10 +30,9 @@
                     {% endif %}
                     <form action="{% url 'quiz_step' %}" method="post" class="quiz__elems fic">
                         {% csrf_token %}
-                        <button type="submit" name="budget" value="До 1 000 руб" class="quiz__elem">До 1 000 руб</button>
-                        <button type="submit" name="budget" value="1 000 - 5 000 руб" class="quiz__elem">1 000 - 5 000 руб</button>
-                        <button type="submit" name="budget" value="от 5 000 руб" class="quiz__elem">от 5 000 руб</button>
-                        <button type="submit" name="budget" value="Не имеет значения" class="quiz__elem">Не имеет значения</button>
+                        {% for value, label in budgets %}
+                        <button type="submit" name="budget" value="{{ value }}" class="quiz__elem">{{ label }}</button>
+                        {% endfor %}
                     </form>
                     <div class="quiz__progress">
                         <div class="quiz__progress_step">
@@ -35,4 +48,40 @@
             </div>
         </div>
     </section>
+    <section id="consultation">
+        <div class="container">
+            <div class="consultation">
+                <div class="title consultation__title">Оставьте заявку на консультацию</div>
+                <form action="{% url 'quiz_step' %}" method="post" class="consultation__form">
+                    {% csrf_token %}
+                    {% if consultation_form.name.errors %}
+                        <span style="color: red;">{{ consultation_form.name.errors.0 }}</span>
+                    {% endif %}
+                    <input type="text" name="name" class="consultation__form_input" placeholder="Введите Имя" value="{{ consultation_form.name.value|default:'' }}" required>
+                    {% if consultation_form.phone.errors %}
+                        <span style="color: red;">{{ consultation_form.phone.errors.0 }}</span>
+                    {% endif %}
+                    <input type="text" name="phone" class="consultation__form_input" placeholder="+7 (999) 000 00 00" value="{{ consultation_form.phone.value|default:'' }}" required>
+                    <button type="submit" class="consultation__form_btn">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    <footer id="footer">
+        <div class="container">
+            <div class="footer">
+                <a href="{% url 'index' %}"><img src="{% static 'img/logo.svg' %}" alt="logo" class="logo footer__logo"></a>
+                <nav>
+                    <ul class="menu footer__menu ficc">
+                        <li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
+                        <li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+                        <li class="menu__item"><a href="{% url 'index' %}#contacts" class="menu__item_link">Контакты</a></li>
+                    </ul>
+                </nav>
+                <hr class="line"></hr>
+                <a href="#" class="footer__poli">Политика конфиденциальности</a>
+                <p class="footer_cop">©️2025. FlowerShop. Все права защищены</p>
+            </div>
+        </div>
+    </footer>
 {% endblock %}

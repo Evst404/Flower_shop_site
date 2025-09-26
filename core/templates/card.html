@@ -1,33 +1,53 @@
 {% extends 'base.html' %}
 {% block title %} - {{ bouquet.name }}{% endblock %}
 {% block content %}
-    {% load static %} 
+    {% load static %}
+    <header id="header">
+        <div class="container">
+            <div class="header ficb">
+                <a href="{% url 'index' %}"><img src="{% static 'img/logo.svg' %}" alt="logo" class="logo"></a>
+                <nav>
+                    <ul class="menu ficc">
+                        <li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
+                        <li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+                        <li class="menu__item"><a href="{% url 'index' %}#contacts" class="menu__item_link">Контакты</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
     <section id="card">
         <div class="container">
             <div class="card ficb">
                 <div class="card__block card__block_first">
-                    <img src="{% if bouquet.image %}{{ bouquet.image.url }}{% else %}{% static 'img/cardImg.jpg' %}{% endif %}" alt="img" class="card__img">
+                    <img src="{% if bouquet.image %}{{ bouquet.image.url }}{% else %}{% static 'img/cardImg.jpg' %}{% endif %}" alt="{{ bouquet.name }}" class="card__img">
                 </div>
                 <div class="card__block card__block_sec">
                     <div class="title">{{ bouquet.name }}</div>
                     <div class="card__block_price">{{ bouquet.price }} руб</div>
-                    <div class="card__elems ">
+                    <div class="card__elems">
+                        <span class="card__elems_intro">Описание:</span>
+                        <div class="card__items">
+                            <p class="card__items_text card__items_text__first">{{ bouquet.description|default:"Описание отсутствует" }}</p>
+                        </div>
+                    </div>
+                    <div class="card__elems">
                         <span class="card__elems_intro">Состав</span>
                         <div class="card__items">
                             {% if bouquet.composition %}
                                 {% for item in bouquet.composition.splitlines %}
-                                    <span class="card_items_intro">{{ item }}</span>
+                                <span class="card_items_intro">{{ item }}</span>
                                 {% endfor %}
                             {% else %}
                                 <span class="card_items_intro">Состав не указан</span>
                             {% endif %}
                         </div>
                     </div>
-                    <div class="card__elems ">
+                    <div class="card__elems">
                         <span class="card__elems_intro">Размер</span>
                         <div class="card__items">
-                            <span class="card_items_intro">Высота - 50 см</span>
-                            <span class="card_items_intro">Ширина - 30 см</span>
+                            <span class="card_items_intro">Высота - {{ bouquet.height }} см</span>
+                            <span class="card_items_intro">Ширина - {{ bouquet.width }} см</span>
                         </div>
                     </div>
                     <a href="{% url 'order' bouquet.id %}" class="btn largeBtn card__btn">Заказать букет</a>
@@ -41,10 +61,34 @@
                 <div class="title consultation__title">Оставьте заявку на консультацию</div>
                 <form action="{% url 'card' bouquet.id %}" method="post" class="consultation__form">
                     {% csrf_token %}
-                    {{ consultation_form.as_p }}
-                    <button type="submit" name="consultation_submit" class="consultation__form_btn">Отправить</button>
+                    {% if consultation_form.name.errors %}
+                        <span style="color: red;">{{ consultation_form.name.errors.0 }}</span>
+                    {% endif %}
+                    <input type="text" name="name" class="consultation__form_input" placeholder="Введите Имя" value="{{ consultation_form.name.value|default:'' }}" required>
+                    {% if consultation_form.phone.errors %}
+                        <span style="color: red;">{{ consultation_form.phone.errors.0 }}</span>
+                    {% endif %}
+                    <input type="text" name="phone" class="consultation__form_input" placeholder="+7 (999) 000 00 00" value="{{ consultation_form.phone.value|default:'' }}" required>
+                    <button type="submit" class="consultation__form_btn">Отправить</button>
                 </form>
             </div>
         </div>
     </section>
+    <footer id="footer">
+        <div class="container">
+            <div class="footer">
+                <a href="{% url 'index' %}"><img src="{% static 'img/logo.svg' %}" alt="logo" class="logo footer__logo"></a>
+                <nav>
+                    <ul class="menu footer__menu ficc">
+                        <li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
+                        <li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+                        <li class="menu__item"><a href="{% url 'index' %}#contacts" class="menu__item_link">Контакты</a></li>
+                    </ul>
+                </nav>
+                <hr class="line"></hr>
+                <a href="#" class="footer__poli">Политика конфиденциальности</a>
+                <p class="footer_cop">©️2025. FlowerShop. Все права защищены</p>
+            </div>
+        </div>
+    </footer>
 {% endblock %}

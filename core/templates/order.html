@@ -2,6 +2,20 @@
 {% block title %} - Оформление доставки{% endblock %}
 {% block content %}
     {% load static %}
+    <header id="header">
+        <div class="container">
+            <div class="header ficb">
+                <a href="{% url 'index' %}"><img src="{% static 'img/logo.svg' %}" alt="logo" class="logo"></a>
+                <nav>
+                    <ul class="menu ficc">
+                        <li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
+                        <li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+                        <li class="menu__item"><a href="{% url 'index' %}#contacts" class="menu__item_link">Контакты</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
     <section id="order">
         <div class="container">
             <div class="order">
@@ -16,10 +30,22 @@
                                 {% endfor %}
                             {% endif %}
                             <div class="order__form_block ficb">
-                                {{ customer_form.first_name }}
-                                {{ customer_form.last_name }}
-                                {{ customer_form.phone_number }}
-                                {{ order_form.delivery_address }}
+                                {% if customer_form.first_name.errors %}
+                                    <span style="color: red;">{{ customer_form.first_name.errors.0 }}</span>
+                                {% endif %}
+                                <input type="text" name="first_name" class="order__form_input" placeholder="Введите Имя" value="{{ customer_form.first_name.value|default:'' }}" required>
+                                {% if customer_form.last_name.errors %}
+                                    <span style="color: red;">{{ customer_form.last_name.errors.0 }}</span>
+                                {% endif %}
+                                <input type="text" name="last_name" class="order__form_input" placeholder="Фамилия" value="{{ customer_form.last_name.value|default:'' }}">
+                                {% if customer_form.phone_number.errors %}
+                                    <span style="color: red;">{{ customer_form.phone_number.errors.0 }}</span>
+                                {% endif %}
+                                <input type="text" name="phone_number" class="order__form_input" placeholder="+7 (999) 000 00 00" value="{{ customer_form.phone_number.value|default:'' }}" required>
+                                {% if order_form.delivery_address.errors %}
+                                    <span style="color: red;">{{ order_form.delivery_address.errors.0 }}</span>
+                                {% endif %}
+                                <input type="text" name="delivery_address" class="order__form_input" placeholder="Адрес доставки" value="{{ order_form.delivery_address.value|default:'' }}" required>
                             </div>
                             <div class="order__form_btns fic">
                                 <div class="order__form_radioBlock">
@@ -59,4 +85,21 @@
         </div>
         <img src="{% static 'img/orderImg.jpg' %}" alt="orderImg" class="order__img">
     </section>
+    <footer id="footer">
+        <div class="container">
+            <div class="footer">
+                <a href="{% url 'index' %}"><img src="{% static 'img/logo.svg' %}" alt="logo" class="logo footer__logo"></a>
+                <nav>
+                    <ul class="menu footer__menu ficc">
+                        <li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
+                        <li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+                        <li class="menu__item"><a href="{% url 'index' %}#contacts" class="menu__item_link">Контакты</a></li>
+                    </ul>
+                </nav>
+                <hr class="line"></hr>
+                <a href="#" class="footer__poli">Политика конфиденциальности</a>
+                <p class="footer_cop">©️2025. FlowerShop. Все права защищены</p>
+            </div>
+        </div>
+    </footer>
 {% endblock %}

@@ -2,6 +2,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import MinValueValidator
 
+
 class Bouquet(models.Model):
     OCCASIONS = [
         ('Свадьба', 'Свадьба'),
@@ -21,6 +22,8 @@ class Bouquet(models.Model):
     composition = models.TextField(verbose_name='Состав', blank=True)
     occasion = models.CharField(verbose_name='Повод', max_length=50, choices=OCCASIONS, default='Без повода')
     budget = models.CharField(verbose_name='Бюджет', max_length=50, choices=BUDGETS, default='1000-5000')
+    height = models.PositiveIntegerField(default=50, verbose_name='Высота (см)')
+    width = models.PositiveIntegerField(default=30, verbose_name='Ширина (см)')
 
     def __str__(self):
         return self.name
@@ -28,6 +31,7 @@ class Bouquet(models.Model):
     class Meta:
         verbose_name = 'Букет'
         verbose_name_plural = 'Букеты'
+
 
 class Customer(models.Model):
     first_name = models.CharField('Имя', max_length=50)
@@ -41,9 +45,11 @@ class Customer(models.Model):
         verbose_name = 'Покупатель'
         verbose_name_plural = 'Покупатели'
 
+
 class Courier(models.Model):
     name = models.CharField('Имя курьера', max_length=100)
     phone_number = PhoneNumberField('Номер телефона', blank=True)
+    telegram_chat_id = models.CharField('Telegram Chat ID', max_length=50, blank=True, help_text='Для уведомлений о заказах')
 
     def __str__(self):
         return self.name
@@ -51,6 +57,8 @@ class Courier(models.Model):
     class Meta:
         verbose_name = 'Курьер'
         verbose_name_plural = 'Курьеры'
+
+
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Покупатель', on_delete=models.CASCADE)
@@ -67,6 +75,8 @@ class Order(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
 
+
+
 class Consultation(models.Model):
     customer = models.ForeignKey(Customer, verbose_name='Покупатель', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -77,3 +87,19 @@ class Consultation(models.Model):
     class Meta:
         verbose_name = 'Заявка на консультацию'
         verbose_name_plural = 'Заявки на консультацию'
+
+
+
+class Payment(models.Model):
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='payment')
+    payment_id = models.CharField(max_length=36, unique=True)  
+    status = models.CharField(max_length=50, default='pending')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Платёж для заказа {self.order.id} ({self.status})'
+
+    class Meta:
+        verbose_name = 'Платёж'
+        verbose_name_plural = 'Платежи'

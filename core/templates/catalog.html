@@ -2,13 +2,27 @@
 {% block title %} - Каталог{% endblock %}
 {% block content %}
     {% load static %}
+    <header id="header">
+        <div class="container">
+            <div class="header ficb">
+                <a href="{% url 'index' %}"><img src="{% static 'img/logo.svg' %}" alt="logo" class="logo"></a>
+                <nav>
+                    <ul class="menu ficc">
+                        <li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
+                        <li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+                        <li class="menu__item"><a href="{% url 'index' %}#contacts" class="menu__item_link">Контакты</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
     <section id="catalog">
         <div class="container p100">
             <div class="catalog">
                 <div class="title">Все букеты</div>
                 <div class="catalog__block">
                     <div class="recommended__elems ficb recommended__elems_first">
-                        {% for bouquet in bouquets|slice:":3" %}
+                        {% for bouquet in page_obj %}
                         <div class="recommended__block {% if forloop.counter == 1 %}recommended__block_first{% elif forloop.counter == 2 %}recommended__block_sec{% elif forloop.counter == 3 %}recommended__block_thr{% endif %}">
                             <div class="recommended__block_elems ficb">
                                 <span class="recommended__block_intro"><a href="{% url 'card' bouquet.id %}">{{ bouquet.name }}</a></span>
@@ -17,19 +31,15 @@
                         </div>
                         {% endfor %}
                     </div>
-                    {% if bouquets|length > 3 %}
-                    <div class="recommended__elems ficb recommended__elems_sec">
-                        {% for bouquet in bouquets|slice:"3:" %}
-                        <div class="recommended__block {% if forloop.counter == 1 %}recommended__block_first{% elif forloop.counter == 2 %}recommended__block_sec{% elif forloop.counter == 3 %}recommended__block_thr{% endif %}">
-                            <div class="recommended__block_elems ficb">
-                                <span class="recommended__block_intro"><a href="{% url 'card' bouquet.id %}">{{ bouquet.name }}</a></span>
-                                <span class="recommended__block_price">{{ bouquet.price }} руб</span>
-                            </div>
-                        </div>
-                        {% endfor %}
+                    <div class="pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+                        {% endif %}
+                        <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}">Следующая</a>
+                        {% endif %}
                     </div>
-                    {% endif %}
-                    <a href="#" class="btn largeBtn catalog__btn">Показать ещё</a>
                 </div>
             </div>
         </div>
@@ -38,12 +48,36 @@
         <div class="container">
             <div class="consultation">
                 <div class="title consultation__title">Оставьте заявку на консультацию</div>
-                <form action="{% url 'consultation' %}" method="post" class="consultation__form">
+                <form action="{% url 'catalog' %}" method="post" class="consultation__form">
                     {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" name="consultation_submit" class="consultation__form_btn">Отправить</button>
+                    {% if form.name.errors %}
+                        <span style="color: red;">{{ form.name.errors.0 }}</span>
+                    {% endif %}
+                    <input type="text" name="name" class="consultation__form_input" placeholder="Введите Имя" value="{{ form.name.value|default:'' }}" required>
+                    {% if form.phone.errors %}
+                        <span style="color: red;">{{ form.phone.errors.0 }}</span>
+                    {% endif %}
+                    <input type="text" name="phone" class="consultation__form_input" placeholder="+7 (999) 000 00 00" value="{{ form.phone.value|default:'' }}" required>
+                    <button type="submit" class="consultation__form_btn">Отправить</button>
                 </form>
             </div>
         </div>
     </section>
+    <footer id="footer">
+        <div class="container">
+            <div class="footer">
+                <a href="{% url 'index' %}"><img src="{% static 'img/logo.svg' %}" alt="logo" class="logo footer__logo"></a>
+                <nav>
+                    <ul class="menu footer__menu ficc">
+                        <li class="menu__item"><a href="{% url 'catalog' %}" class="menu__item_link">Каталог</a></li>
+                        <li class="menu__item"><a href="{% url 'quiz' %}" class="menu__item_link">Рекомендации</a></li>
+                        <li class="menu__item"><a href="{% url 'index' %}#contacts" class="menu__item_link">Контакты</a></li>
+                    </ul>
+                </nav>
+                <hr class="line"></hr>
+                <a href="#" class="footer__poli">Политика конфиденциальности</a>
+                <p class="footer_cop">©️2025. FlowerShop. Все права защищены</p>
+            </div>
+        </div>
+    </footer>
 {% endblock %}
